@@ -1,13 +1,15 @@
 import json
+from typing import Any
 
 import kubernetes
 import yaml
 from apischema import serialize
-from apischema.json_schema import deserialization_schema
 from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 
 from kubecrd.types import Scope
+
+from dataclasses import fields
 
 # ObjectMeta_attribute_map is simply the reverse of the
 # V1ObjectMeta.attribute_map , which is a mapping from python attribute to json
@@ -16,23 +18,6 @@ from kubecrd.types import Scope
 ObjectMeta_attribute_map = {
     value: key for key, value in V1ObjectMeta.attribute_map.items()
 }
-
-from typing import Any, get_type_hints
-from dataclasses import fields
-
-
-def safe_deserialization_schema(cls, **kwargs):
-    """
-    Temporary compatibility wrapper for Python 3.14 / Apischema 0.18.x
-    """
-    try:
-        return deserialization_schema(cls, **kwargs)
-    except KeyError as e:
-        # Rebuild missing type hints for dataclass fields
-        hints = get_type_hints(cls)
-        for f in fields(cls):
-            hints.setdefault(f.name, object)
-        return deserialization_schema(cls, **kwargs)
 
 
 class KubeResourceBase:
