@@ -237,4 +237,6 @@ Installing
 
 Kube CRD can be install from PyPI using pip or your favorite tool::
 
-  $ pip install kubecrd
+``` sh
+pip install kubecrd
+```
