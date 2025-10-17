@@ -188,7 +188,7 @@ Or you can use the block sync API for the watch::
 
   for happened, resource in Resource.watch(k8s_client):
       print(f'Resource {resource.metadata.name} was {happened}')
-  
+
 
 Installing
 ==========
