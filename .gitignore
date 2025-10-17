@@ -2,6 +2,7 @@ venv/*
 .venv
 venv
 *.pyc
+.pytest_cache
 
 # Devbox
 devbox.lock
