@@ -1,13 +1,14 @@
 import yaml
 from dataclasses import dataclass, field
 from kubecrd import schemabase
+from kubecrd.types import Scope
 
 
 @dataclass
 class CrdSchemaResource(schemabase.KubeResourceBase):
     __group__ = "pytest.com"
     __version__ = "v1alpha1"
-    __scope__ = "Cluster"
+    __scope__ = Scope.NAMESPACE
 
     id: str
     name: str

@@ -7,6 +7,8 @@ from apischema.json_schema import deserialization_schema
 from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 
+from kubecrd.types import Scope
+
 # ObjectMeta_attribute_map is simply the reverse of the
 # V1ObjectMeta.attribute_map , which is a mapping from python attribute to json
 # key while this is the opposite from json key to python attribute so that we
@@ -42,7 +44,7 @@ class KubeResourceBase:
 
     __group__: str
     __version__: str
-    __scope__: str = "Namespaced"
+    __scope__: Scope = Scope.NAMESPACE
 
     @staticmethod
     def dataclass_to_properties(dc_type: Any) -> dict:
