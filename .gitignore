@@ -1,5 +1,8 @@
 venv/*
 .venv
 venv
-.tox
 *.pyc
+
+# Devbox
+devbox.lock
+.devbox
