@@ -1,6 +1,4 @@
-========
-Kube CRD
-========
+# Kube CRD
 
 The primary purpose of this project is to simplify working with Kubernetes
 Custom Resources. To achieve that it provides a base class,
