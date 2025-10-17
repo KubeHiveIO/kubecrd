@@ -2,13 +2,13 @@
 name = "kubecrd"
 version = "34.1.0"
 description = "Create Kubernetes CRD using Python dataclasses"
-authors = ["Abhilash Raj <raj.abhilash1@gmail.com>"]
+authors = ["Paris Nakita Kejser <hi@pnk.sh>"]
 license = "Apache-2.0"
-readme = "README.rst"
-repository = "https://github.com/maxking/kubecrd"
+readme = "README.md"
+repository = "https://github.com/KubeHiveIO/kubecrd"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/maxking/kubecrd/issues"
+"Bug Tracker" = "https://github.com/KubeHiveIO/kubecrd/issues"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<4"
