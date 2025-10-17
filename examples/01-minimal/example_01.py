@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from kubecrd import schemabase
-from kubecrd.types import Scope
+from kubecrds import schemabase
+from kubecrds.types import Scope
 
 
 @dataclass

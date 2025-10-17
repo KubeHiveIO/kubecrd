@@ -2,14 +2,14 @@
 
 The primary purpose of this project is to simplify working with Kubernetes
 Custom Resources. To achieve that it provides a base class,
-``kubecrd.KubeResourceBase`` that can create Python
+``kubecrds.KubeResourceBase`` that can create Python
 dataclassses into Kubernetes Custom Resources and also generate and install
 Custom Resource Definitions for those resource into the K8s cluster directly.
 
 ``` python
 from dataclasses import dataclass, field
 from uuid import UUID
-from kubecrd import KubeResourceBase
+from kubecrds import KubeResourceBase
 from apischema import schema
 
 @dataclass
@@ -238,5 +238,5 @@ Installing
 Kube CRD can be install from PyPI using pip or your favorite tool::
 
 ``` sh
-pip install kubecrd
+pip install kubecrds
 ```

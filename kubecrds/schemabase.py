@@ -7,7 +7,7 @@ from apischema import serialize
 from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 
-from kubecrd.types import Scope
+from kubecrds.types import Scope
 
 from dataclasses import fields
 

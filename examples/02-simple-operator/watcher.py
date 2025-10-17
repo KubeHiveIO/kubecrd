@@ -6,7 +6,7 @@ import kopf
 import kubernetes
 from apischema import schema
 
-from kubecrd import schemabase
+from kubecrds import schemabase
 
 LOCK: asyncio.Lock
 
