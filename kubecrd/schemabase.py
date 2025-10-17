@@ -15,6 +15,23 @@ ObjectMeta_attribute_map = {
     value: key for key, value in V1ObjectMeta.attribute_map.items()
 }
 
+from typing import Any, get_type_hints
+from dataclasses import fields
+
+
+def safe_deserialization_schema(cls, **kwargs):
+    """
+    Temporary compatibility wrapper for Python 3.14 / Apischema 0.18.x
+    """
+    try:
+        return deserialization_schema(cls, **kwargs)
+    except KeyError as e:
+        # Rebuild missing type hints for dataclass fields
+        hints = get_type_hints(cls)
+        for f in fields(cls):
+            hints.setdefault(f.name, object)
+        return deserialization_schema(cls, **kwargs)
+
 
 class KubeResourceBase:
     """KubeResourceBase is base class that provides methods to converts dataclass
@@ -22,6 +39,42 @@ class KubeResourceBase:
     class and supports deserialization of the object JSON from K8s into Python
     obects with support for Metadata.
     """
+
+    __group__: str
+    __version__: str
+    __scope__: str = "Namespaced"
+
+    @staticmethod
+    def dataclass_to_properties(dc_type: Any) -> dict:
+        """Convert dataclass fields into CRD-style 'properties' schema."""
+        props = {}
+        for f in fields(dc_type):
+            prop_schema = {}
+
+            # Infer type
+            if isinstance(f.type, str):
+                prop_schema["type"] = "string"
+            elif isinstance(f.type, int):
+                prop_schema["type"] = "integer"
+            elif isinstance(f.type, bool):
+                prop_schema["type"] = "boolean"
+            elif isinstance(f.type, float):
+                prop_schema["type"] = "number"
+            elif isinstance(getattr(f.type, "__origin__", None), list):
+                prop_schema["type"] = "array"
+                item_type = f.type.__args__[0]
+                if isinstance(item_type, str):
+                    prop_schema["items"] = {"type": "string"}
+                else:
+                    prop_schema["items"] = {"type": "object"}
+            else:
+                prop_schema["type"] = "object"
+
+            # Add metadata (like description)
+            prop_schema.update(f.metadata)
+
+            props[f.name] = prop_schema
+        return props
 
     @classmethod
     def apischema(cls):
@@ -32,9 +85,8 @@ class KubeResourceBase:
         the line which rely on (a subset?) of OpenAPIV3 schema for the
         definition of a Kubernetes Custom Resource.
         """
-        return deserialization_schema(
-            cls, all_refs=False, additional_properties=True, with_schema=False
-        )
+
+        return cls.dataclass_to_properties(dc_type=cls)
 
     @classmethod
     def apischema_json(cls):
@@ -66,7 +118,7 @@ class KubeResourceBase:
         TODO: Make singular and plural a configurable parameter using dunder
         attributes on cls like ``__group__`` and ``__version__``.
         """
-        return f'{cls.singular()}s'
+        return f"{cls.singular()}s"
 
     @classmethod
     def crd_schema_dict(cls):
@@ -75,31 +127,31 @@ class KubeResourceBase:
         This returns a dict representation of the Kubernetes CRD Object of cls.
         """
         crd = {
-            'apiVersion': 'apiextensions.k8s.io/v1',
-            'kind': 'CustomResourceDefinition',
-            'metadata': {
-                'name': f'{cls.plural()}.{cls.__group__}',
+            "apiVersion": "apiextensions.k8s.io/v1",
+            "kind": "CustomResourceDefinition",
+            "metadata": {
+                "name": f"{cls.plural()}.{cls.__group__}",
             },
-            'spec': {
-                'group': cls.__group__,
-                'scope': 'Namespaced',
-                'names': {
-                    'singular': cls.singular(),
-                    'plural': cls.plural(),
-                    'kind': cls.__name__,
+            "spec": {
+                "group": cls.__group__,
+                "scope": cls.__scope__,
+                "names": {
+                    "singular": cls.singular(),
+                    "plural": cls.plural(),
+                    "kind": cls.__name__,
                 },
-                'versions': [
+                "versions": [
                     {
-                        'name': cls.__version__,
+                        "name": cls.__version__,
                         # This API is served by default, currently there is no
                         # support for multiple versions.
-                        'served': True,
-                        'storage': True,
-                        'schema': {
-                            'openAPIV3Schema': {
-                                'type': 'object',
-                                'properties': {
-                                    'spec': cls.apischema(),
+                        "served": True,
+                        "storage": True,
+                        "schema": {
+                            "openAPIV3Schema": {
+                                "type": "object",
+                                "properties": {
+                                    "spec": cls.apischema(),
                                 },
                             }
                         },
@@ -130,15 +182,13 @@ class KubeResourceBase:
         :returns: Instantiated cls with the data from json_data.
         :rtype: cls
         """
-        assert (
-            json_data.get('apiVersion') == f'{cls.__group__}/{cls.__version__}'
-        )
-        assert json_data.get('kind') == cls.__name__
+        assert json_data.get("apiVersion") == f"{cls.__group__}/{cls.__version__}"
+        assert json_data.get("kind") == cls.__name__
         inputs = {}
-        for key, value in json_data.get('metadata').items():
+        for key, value in json_data.get("metadata").items():
             inputs[ObjectMeta_attribute_map.get(key)] = value
         meta = V1ObjectMeta(**inputs)
-        ins = cls(**json_data.get('spec'))
+        ins = cls(**json_data.get("spec"))
         ins.json = json_data
         ins.metadata = meta
         return ins
@@ -159,7 +209,7 @@ class KubeResourceBase:
                 yaml_objects=[yaml.load(cls.crd_schema(), Loader=yaml.Loader)],
             )
         except utils.FailToCreateError as e:
-            code = json.loads(e.api_exceptions[0].body).get('code')
+            code = json.loads(e.api_exceptions[0].body).get("code")
             if code == 409 and exist_ok:
                 return
             raise
@@ -178,8 +228,8 @@ class KubeResourceBase:
             allow_watch_bookmarks=True,
             timeout_seconds=50,
         ):
-            obj = cls.from_json(event['object'])
-            yield (event['type'], obj)
+            obj = cls.from_json(event["object"])
+            yield (event["type"], obj)
 
     @classmethod
     async def async_watch(cls, k8s_client):
@@ -196,8 +246,8 @@ class KubeResourceBase:
             watch=True,
         )
         async for event in stream:
-            obj = cls.from_json(event['object'])
-            yield (event['type'], obj)
+            obj = cls.from_json(event["object"])
+            yield (event["type"], obj)
 
     def serialize(self, name_prefix=None):
         """Serialize the CR as a JSON suitable for POST'ing to K8s API."""
@@ -205,15 +255,15 @@ class KubeResourceBase:
             name_prefix = self.__class__.__name__.lower()
 
         return {
-            'kind': self.__class__.__name__,
-            'apiVersion': f'{self.__group__}/{self.__version__}',
-            'spec': serialize(self),
-            'metadata': {
-                'name': (name_prefix + str(id(self))).lower(),
+            "kind": self.__class__.__name__,
+            "apiVersion": f"{self.__group__}/{self.__version__}",
+            "spec": serialize(self),
+            "metadata": {
+                "name": (name_prefix + str(id(self))).lower(),
             },
         }
 
-    def save(self, k8s_client, namespace='default'):
+    def save(self, k8s_client, namespace="default"):
         """Save the instance of this class as a K8s custom resource."""
         api_instance = kubernetes.client.CustomObjectsApi(k8s_client)
         resp = api_instance.create_namespaced_custom_object(
@@ -225,7 +275,7 @@ class KubeResourceBase:
         )
         return resp
 
-    async def async_save(self, k8s_client, namespace='default'):
+    async def async_save(self, k8s_client, namespace="default"):
         """Save the instance of this class as a K8s custom resource."""
         from kubernetes_asyncio import client
 

@@ -13,15 +13,15 @@ LOCK: asyncio.Lock
 
 @dataclass
 class Resource(schemabase.KubeResourceBase):
-    __group__ = 'example.com'
-    __version__ = 'v1alpha1'
+    __group__ = "example.com"
+    __version__ = "v1alpha1"
 
     id: str
     name: str
     tags: list[str] = field(
         default_factory=list,
         metadata=schema(
-            description='regroup multiple resources',
+            description="regroup multiple resources",
             unique=False,
         ),
     )
@@ -40,9 +40,9 @@ def install_crd():
     Resource.install(k8s_client, exist_ok=True)
 
 
-@kopf.on.event('resources.example.com')
+@kopf.on.event("resources.example.com")
 async def my_handler(event, **_):
-    resource = Resource.from_json(event.get('object'))
+    resource = Resource.from_json(event.get("object"))
     print(
-        f'Got resource {resource.metadata.name} in namespace {resource.metadata.namespace}'
+        f"Got resource {resource.metadata.name} in namespace {resource.metadata.namespace}"
     )
