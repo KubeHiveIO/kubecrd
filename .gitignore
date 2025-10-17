@@ -3,7 +3,7 @@ venv/*
 venv
 *.pyc
 .pytest_cache
-
+poetry.lock
 # Devbox
 devbox.lock
 .devbox
