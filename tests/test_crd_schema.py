@@ -1,17 +1,33 @@
 import yaml
+from dataclasses import dataclass, field
+from kubecrd import schemabase
+
+
+@dataclass
+class CrdSchemaResource(schemabase.KubeResourceBase):
+    __group__ = "pytest.com"
+    __version__ = "v1alpha1"
+    __scope__ = "Cluster"
+
+    id: str
+    name: str
+    tags: list[str] = field(
+        default_factory=list,
+        metadata={
+            "description": "regroup multiple resources",
+        },
+    )
 
 
 def test_crd_schema_generates_valid_yaml():
     """Ensure the generated CRD schema contains expected keys."""
-    # crd_yaml = Resource.crd_schema()
-    # crd = yaml.safe_load(crd_yaml)
+    crd_yaml = CrdSchemaResource.crd_schema()
+    crd = yaml.safe_load(crd_yaml)
 
-    # assert crd["apiVersion"] == "apiextensions.k8s.io/v1"
-    # assert crd["kind"] == "CustomResourceDefinition"
-    # assert crd["metadata"]["name"] == "resources.example.com"
-    # assert crd["spec"]["group"] == "example.com"
-    # assert "versions" in crd["spec"]
-    # assert crd["spec"]["names"]["kind"] == "Resource"
-    # assert crd["spec"]["versions"][0]["name"] == "v1alpha1"
-
-    assert True is True
+    assert crd["apiVersion"] == "apiextensions.k8s.io/v1"
+    assert crd["kind"] == "CustomResourceDefinition"
+    assert crd["metadata"]["name"] == "crdschemaresources.pytest.com"
+    assert crd["spec"]["group"] == "pytest.com"
+    assert "versions" in crd["spec"]
+    assert crd["spec"]["names"]["kind"] == "CrdSchemaResource"
+    assert crd["spec"]["versions"][0]["name"] == "v1alpha1"
