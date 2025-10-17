@@ -1,8 +1,4 @@
 from dataclasses import dataclass, field
-from uuid import UUID
-
-from apischema import schema
-
 from kubecrd import schemabase
 
 
