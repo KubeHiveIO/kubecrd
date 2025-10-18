@@ -11,12 +11,34 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: |
+        poetry install
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Test with poetry
+      run: |
+        poetry run pytest
+
+  kind_cluster:
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -35,16 +57,4 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-
-    - name: Install dependencies
-      run: |
-        poetry install
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Test with poetry
-      run: |
-        poetry run pytest
+        python-version: 3.14
