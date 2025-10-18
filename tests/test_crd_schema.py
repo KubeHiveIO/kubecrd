@@ -6,7 +6,7 @@ from kubecrds.types import Scope
 
 @dataclass
 class CrdSchemaResource(schemabase.KubeResourceBase):
-    __group__ = "pytest.com"
+    __group__ = "simple-example.com"
     __version__ = "v1alpha1"
     __scope__ = Scope.NAMESPACE
 
@@ -27,8 +27,8 @@ def test_crd_schema_generates_valid_yaml():
 
     assert crd["apiVersion"] == "apiextensions.k8s.io/v1"
     assert crd["kind"] == "CustomResourceDefinition"
-    assert crd["metadata"]["name"] == "crdschemaresources.pytest.com"
-    assert crd["spec"]["group"] == "pytest.com"
+    assert crd["metadata"]["name"] == "crdschemaresources.simple-example.com"
+    assert crd["spec"]["group"] == "simple-example.com"
     assert "versions" in crd["spec"]
     assert crd["spec"]["names"]["kind"] == "CrdSchemaResource"
     assert crd["spec"]["versions"][0]["name"] == "v1alpha1"

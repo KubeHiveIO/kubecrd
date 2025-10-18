@@ -1,12 +1,15 @@
-==========
-CRD Schema
-==========
+# CRD Schema
 
 This is a simple example that simply prints the CRD schema for a given Python
 dataclass. You can run it using::
 
-  $ cd examples/01-minimal
-  $ poetry run python3 example_01.py
+``` sh
+cd examples/01-minimal
+poetry run python3 example_01.py
+```
+
+
+``` yaml
   apiVersion: apiextensions.k8s.io/v1
   kind: CustomResourceDefinition
   metadata:
@@ -43,3 +46,4 @@ dataclass. You can run it using::
           type: object
       served: true
       storage: true
+```
