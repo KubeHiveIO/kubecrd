@@ -8,7 +8,6 @@ from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 
 from kubecrds.types import Scope
-
 from dataclasses import fields
 
 # ObjectMeta_attribute_map is simply the reverse of the
@@ -39,21 +38,28 @@ class KubeResourceBase:
             prop_schema = {}
 
             # Infer type
-            if isinstance(f.type, str):
+            if f.type is str:
                 prop_schema["type"] = "string"
-            elif isinstance(f.type, int):
+            elif f.type is int:
                 prop_schema["type"] = "integer"
-            elif isinstance(f.type, bool):
+            elif f.type is bool:
                 prop_schema["type"] = "boolean"
-            elif isinstance(f.type, float):
+            elif f.type is float:
                 prop_schema["type"] = "number"
-            elif isinstance(getattr(f.type, "__origin__", None), list):
+            elif getattr(f.type, "__origin__", None) is list:
                 prop_schema["type"] = "array"
                 item_type = f.type.__args__[0]
-                if isinstance(item_type, str):
+                if item_type is str:
                     prop_schema["items"] = {"type": "string"}
                 else:
                     prop_schema["items"] = {"type": "object"}
+
+            elif getattr(f.type, "__module__", None) == "__main__":
+                prop_schema["type"] = "object"
+                prop_schema["properties"] = KubeResourceBase.dataclass_to_properties(
+                    f.type
+                )
+
             else:
                 prop_schema["type"] = "object"
 
@@ -61,6 +67,7 @@ class KubeResourceBase:
             prop_schema.update(f.metadata)
 
             props[f.name] = prop_schema
+
         return props
 
     @classmethod
@@ -121,7 +128,7 @@ class KubeResourceBase:
             },
             "spec": {
                 "group": cls.__group__,
-                "scope": cls.__scope__,
+                "scope": cls.__scope__.value,
                 "names": {
                     "singular": cls.singular(),
                     "plural": cls.plural(),
@@ -138,7 +145,10 @@ class KubeResourceBase:
                             "openAPIV3Schema": {
                                 "type": "object",
                                 "properties": {
-                                    "spec": cls.apischema(),
+                                    "spec": {
+                                        "type": "object",
+                                        "properties": cls.apischema(),
+                                    }
                                 },
                             }
                         },
@@ -146,6 +156,7 @@ class KubeResourceBase:
                 ],
             },
         }
+
         return crd
 
     @classmethod
@@ -195,6 +206,7 @@ class KubeResourceBase:
                 k8s_client,
                 yaml_objects=[yaml.load(cls.crd_schema(), Loader=yaml.Loader)],
             )
+
         except utils.FailToCreateError as e:
             code = json.loads(e.api_exceptions[0].body).get("code")
             if code == 409 and exist_ok:
