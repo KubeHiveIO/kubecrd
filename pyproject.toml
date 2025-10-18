@@ -1,6 +1,12 @@
+[project]
+name = "kubecrds"
+dynamic = ["version"]
+description = ""
+readme = "README.md"
+
 [tool.poetry]
 name = "kubecrds"
-version = "34.1.1"
+version = "0.0.1"
 description = "Create Kubernetes CRD using Python dataclasses"
 authors = ["Paris Nakita Kejser <hi@pnk.sh>"]
 license = "Apache-2.0"
