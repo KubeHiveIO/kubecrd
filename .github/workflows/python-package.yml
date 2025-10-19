@@ -25,6 +25,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: KinD (Kubernetes in Docker) Action
+      uses: engineerd/setup-kind@v0.6.2
+      with:
+        version: "v0.30.0"
+        name: kind-${{ matrix.python-version }}-${{ github.run_id }}
+
+    - name: Testing
+      run: |
+        kubectl cluster-info
+        kubectl version
+        kubectl get pods -n kube-system
+
     - name: Install Poetry
       uses: snok/install-poetry@v1
 
@@ -36,26 +48,3 @@ jobs:
     - name: Test with poetry
       run: |
         poetry run pytest
-
-  kind_cluster:
-    runs-on: ubuntu-latest
-    needs: [unittest]
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: KinD (Kubernetes in Docker) Action
-      uses: engineerd/setup-kind@v0.6.2
-      with:
-        version: "v0.30.0"
-
-    - name: Testing
-      run: |
-        kubectl cluster-info
-        kubectl version
-        kubectl get pods -n kube-system
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: 3.14
