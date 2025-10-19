@@ -16,6 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+        k8s-version: ["v1.31.13", "v1.32.9", "v1.33.5", "v1.34.1"]
 
     steps:
     - uses: actions/checkout@v3
@@ -25,11 +26,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: KinD (Kubernetes in Docker) Action
+    - name: KinD Action - k8s ver. ${{ matrix.k8s-version }}
       uses: engineerd/setup-kind@v0.6.2
       with:
         version: "v0.30.0"
-        name: kind-${{ matrix.python-version }}-${{ github.run_id }}
+        name: kind-${{ matrix.python-version }}-${{ matrix.k8s-version }}-${{ github.run_id }}
+        image: kindest/node:${{ matrix.k8s-version }}
 
     - name: Testing
       run: |
