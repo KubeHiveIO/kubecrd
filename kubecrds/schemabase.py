@@ -8,7 +8,7 @@ from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 
 from kubecrds.types import Scope
-from dataclasses import fields
+from dataclasses import fields, is_dataclass
 
 # ObjectMeta_attribute_map is simply the reverse of the
 # V1ObjectMeta.attribute_map , which is a mapping from python attribute to json
@@ -54,7 +54,7 @@ class KubeResourceBase:
                 else:
                     prop_schema["items"] = {"type": "object"}
 
-            elif getattr(f.type, "__module__", None) == "__main__":
+            elif is_dataclass(f.type) and issubclass(f.type, KubeResourceBase):
                 prop_schema["type"] = "object"
                 prop_schema["properties"] = KubeResourceBase.dataclass_to_properties(
                     f.type
