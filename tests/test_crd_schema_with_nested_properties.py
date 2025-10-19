@@ -36,10 +36,22 @@ def test_crd_schema_nested_properties_generates_valid_yaml():
     crd_yaml = ExampleNested.crd_schema()
     crd = yaml.safe_load(crd_yaml)
 
+    version_v1alpha1 = crd["spec"]["versions"][0]
+    version_v1alpha1_properties = version_v1alpha1["schema"]["openAPIV3Schema"][
+        "properties"
+    ]["spec"]["properties"]
+
     assert crd["apiVersion"] == "apiextensions.k8s.io/v1"
     assert crd["kind"] == "CustomResourceDefinition"
     assert crd["metadata"]["name"] == "examplenesteds.nested-example.com"
     assert crd["spec"]["group"] == "nested-example.com"
     assert "versions" in crd["spec"]
     assert crd["spec"]["names"]["kind"] == "ExampleNested"
-    assert crd["spec"]["versions"][0]["name"] == "v1alpha1"
+
+    assert version_v1alpha1["name"] == "v1alpha1"
+
+    assert version_v1alpha1_properties["sourceRef"]["type"] == "object"
+    assert (
+        version_v1alpha1_properties["sourceRef"]["properties"]["kind"]["type"]
+        == "string"
+    )
