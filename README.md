@@ -6,6 +6,22 @@ Custom Resources. To achieve that it provides a base class,
 dataclassses into Kubernetes Custom Resources and also generate and install
 Custom Resource Definitions for those resource into the K8s cluster directly.
 
+---
+### ✅ Supported Versions
+
+This project actively supports **non-EOL (actively maintained)** versions of both **Python** and **Kubernetes** to ensure long-term compatibility and stability.
+
+- **Python:** 3.11 · 3.12 · 3.13 · 3.14  
+  _Only actively supported Python releases are tested and guaranteed to work._
+
+- **Kubernetes:** 1.31.x · 1.32.x · 1.33.x · 1.34.x  
+  _Each supported Kubernetes release aligns with currently active upstream versions, verified through automated Kind-based test environments._
+
+> 🧩 Our CI pipeline automatically runs tests against multiple Python and Kubernetes versions to prevent regressions and maintain backward compatibility across all active releases.
+
+---
+Example
+
 ``` python
 from dataclasses import dataclass, field
 from uuid import UUID
