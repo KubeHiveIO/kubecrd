@@ -74,7 +74,7 @@ It is also possible to install the CRD in a cluster using a Kubernetes Client
 object::
 
 ``` python
-from from kubernetes import client, config
+from kubernetes import client, config
 config.load_kube_config()
 k8s_client = client.ApiClient()
 Resource.install(k8s_client)
