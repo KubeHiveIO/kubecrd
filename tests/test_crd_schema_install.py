@@ -66,4 +66,17 @@ def test_install_crd_already_exists():
 
 
 def test_install_crd_already_exsits_allow_replace():
-    assert True is True
+    config.load_kube_config()
+    k8s_client = client.ApiClient()
+
+    crd_install_num_1, resualt = CrdSchemaResourceExists.install(
+        k8s_client=k8s_client, exist_ok=True
+    )
+    assert crd_install_num_1 is True
+    assert resualt["code"] in ["CRD_INSTALLED", "CRD_SKIP_CREATE"]
+
+    crd_install_num_2, resualt = CrdSchemaResourceExists.install(
+        k8s_client=k8s_client, exist_ok=True, replace=True
+    )
+    assert crd_install_num_2 is True
+    assert resualt["code"] in ["CRD_REPLACED"]
