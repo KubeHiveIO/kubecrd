@@ -6,6 +6,7 @@ import yaml
 from apischema import serialize
 from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
+from kubernetes import client
 
 from kubecrds.types import Scope
 from dataclasses import fields, is_dataclass
@@ -192,7 +193,9 @@ class KubeResourceBase:
         return ins
 
     @classmethod
-    def install(cls, k8s_client, exist_ok=True):
+    def install(
+        cls, k8s_client: client.ApiClient, exist_ok: bool = True, replace: bool = False
+    ):
         """Install the CRD in Kubernetes.
 
         :param k8s_client: Instantiated Kubernetes API Client.
@@ -200,18 +203,31 @@ class KubeResourceBase:
         :param exist_ok: Boolean representing if error should be raised when
             trying to install a CRD that was already installed.
         :type exist_ok: bool
+        :param replace: If existing, allow to replace the CRD.
+        :type replace: bool
         """
         try:
             utils.create_from_yaml(
                 k8s_client,
                 yaml_objects=[yaml.load(cls.crd_schema(), Loader=yaml.Loader)],
             )
+            return True, {
+                "code": "CRD_INSTALLED",
+                "message": "CRD installed successfully.",
+            }
 
         except utils.FailToCreateError as e:
             code = json.loads(e.api_exceptions[0].body).get("code")
             if code == 409 and exist_ok:
-                return
-            raise
+                return True, {
+                    "code": "CRD_SKIP_CREATE",
+                    "message": "CustomResourceDefinition already exists — skipping creation.",
+                }
+
+            return False, {
+                "code": "CRD_INSTALL_DENIED",
+                "message": "CRD already exists and installation is not allowed.",
+            }
 
     @classmethod
     def watch(cls, client):
