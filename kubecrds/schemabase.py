@@ -7,6 +7,7 @@ from apischema import serialize
 from kubernetes import utils
 from kubernetes.client.models.v1_object_meta import V1ObjectMeta
 from kubernetes import client
+from kubernetes.client.rest import ApiException
 
 from kubecrds.types import Scope
 from dataclasses import fields, is_dataclass
@@ -194,12 +195,15 @@ class KubeResourceBase:
 
     @classmethod
     def install(
-        cls, k8s_client: client.ApiClient, exist_ok: bool = True, replace: bool = False
+        cls,
+        k8s_client: client.ApiClient,
+        exist_ok: bool = True,
+        replace: bool = False,
     ):
         """Install the CRD in Kubernetes.
 
-        :param k8s_client: Instantiated Kubernetes API Client.
-        :type k8s_client: kubernetes.client.api_client.ApiClient
+        :param k8s_client: Instantiated Kubernetes Client.
+        :type k8s_client: kubernetes.client
         :param exist_ok: Boolean representing if error should be raised when
             trying to install a CRD that was already installed.
         :type exist_ok: bool
@@ -219,15 +223,45 @@ class KubeResourceBase:
         except utils.FailToCreateError as e:
             code = json.loads(e.api_exceptions[0].body).get("code")
             if code == 409 and exist_ok:
-                return True, {
-                    "code": "CRD_SKIP_CREATE",
-                    "message": "CustomResourceDefinition already exists — skipping creation.",
-                }
+                if replace:
+                    # DELETE
+                    # apiext_api
+                    cls.delete(k8s_client=k8s_client)
+                    return True, {
+                        "code": "CRD_REPLACED",
+                        "message": "Existing CRD has been replaced with the new definition.",
+                    }
+                else:
+                    return True, {
+                        "code": "CRD_SKIP_CREATE",
+                        "message": "CustomResourceDefinition already exists — skipping creation.",
+                    }
 
             return False, {
                 "code": "CRD_INSTALL_DENIED",
                 "message": "CRD already exists and installation is not allowed.",
             }
+
+    @classmethod
+    def delete(cls, k8s_client: client.ApiClient):
+        apiext_api = client.ApiextensionsV1Api(k8s_client)
+        crd_name = f"{cls.plural()}.{cls.__group__}"
+
+        try:
+            # Try to delete existing CRD before reapplying
+            apiext_api.delete_custom_resource_definition(crd_name)
+            result = {
+                "code": "CRD_DELETED",
+                "message": f"Existing CRD '{crd_name}' removed before reinstall.",
+            }
+            return True, result
+
+        except ApiException as e:
+            result = {
+                "code": "CRD_DELETE_FAILED",
+                "message": f"Failed to remove CRD '{crd_name}': {e}",
+            }
+            return False, result
 
     @classmethod
     def watch(cls, client):

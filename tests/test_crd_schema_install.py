@@ -1,4 +1,3 @@
-import pytest
 from dataclasses import dataclass, field
 from kubecrds import schemabase
 from kubecrds.types import Scope
