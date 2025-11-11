@@ -1,5 +1,4 @@
 # Kube CRDs
-
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=e8da2de2-769b-48e2-a194-a1efb25883f6&page=readme" />
 
 The primary purpose of this project is to simplify working with Kubernetes
@@ -7,6 +6,11 @@ Custom Resources. To achieve that it provides a base class,
 ``kubecrds.KubeResourceBase`` that can create Python
 dataclassses into Kubernetes Custom Resources and also generate and install
 Custom Resource Definitions for those resource into the K8s cluster directly.
+
+**Install kubecrds package**
+```sh
+pip install kubecrds --extra-index-url https://pip.kubehive.io/simple/
+```
 
 ---
 ### ✅ Supported Versions
