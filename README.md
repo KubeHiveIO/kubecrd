@@ -1,5 +1,4 @@
-# Kube CRDs
-<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=e8da2de2-769b-48e2-a194-a1efb25883f6&page=readme" />
+# Kube CRDs <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=e8da2de2-769b-48e2-a194-a1efb25883f6&page=readme" />
 
 The primary purpose of this project is to simplify working with Kubernetes
 Custom Resources. To achieve that it provides a base class,
