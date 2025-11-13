@@ -24,6 +24,9 @@ This project actively supports **non-EOL (actively maintained)** versions of bot
 
 > 🧩 Our CI pipeline automatically runs tests against multiple Python and Kubernetes versions to prevent regressions and maintain backward compatibility across all active releases.
 
+### Code Examples
+- [05. Additional Printer Columns](./examples/05-additional-printer-columns/README.md)
+
 ---
 Example
 
