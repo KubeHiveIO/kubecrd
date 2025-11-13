@@ -29,6 +29,8 @@ This project actively supports **non-EOL (actively maintained)** versions of bot
 > 🧩 Our CI pipeline automatically runs tests against multiple Python and Kubernetes versions to prevent regressions and maintain backward compatibility across all active releases.
 
 ### Code Examples
+- [01. CRD Schema Minimal](./examples/01-minimal/README.md)
+- [04. CRD Schema Nested](./examples/04-nested-crd/README.md)
 - [05. Additional Printer Columns](./examples/05-additional-printer-columns/README.md)
 
 ---
