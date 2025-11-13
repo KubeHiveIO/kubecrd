@@ -6,7 +6,11 @@ Custom Resources. To achieve that it provides a base class,
 dataclassses into Kubernetes Custom Resources and also generate and install
 Custom Resource Definitions for those resource into the K8s cluster directly.
 
-**Install kubecrds package**
+
+## Installing kubecrds package**
+
+Kube CRD can be install from PyPI using pip or your favorite tool
+
 ```sh
 pip install kubecrds --extra-index-url https://pip.kubehive.io/simple/
 ```
@@ -254,13 +258,4 @@ Or you can use the block sync API for the watch::
 ``` python
 for happened, resource in Resource.watch(k8s_client):
   print(f'Resource {resource.metadata.name} was {happened}')
-```
-
-Installing
-==========
-
-Kube CRD can be install from PyPI using pip or your favorite tool::
-
-``` sh
-pip install kubecrds
 ```
