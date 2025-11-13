@@ -1,5 +1,6 @@
+from enum import Enum
 import json
-from typing import Any
+from typing import Any, List, Optional
 
 import kubernetes
 import yaml
@@ -10,7 +11,7 @@ from kubernetes import client
 from kubernetes.client.rest import ApiException
 
 from kubecrds.types import Scope
-from dataclasses import fields, is_dataclass
+from dataclasses import dataclass, fields, is_dataclass
 
 # ObjectMeta_attribute_map is simply the reverse of the
 # V1ObjectMeta.attribute_map , which is a mapping from python attribute to json
@@ -19,6 +20,21 @@ from dataclasses import fields, is_dataclass
 ObjectMeta_attribute_map = {
     value: key for key, value in V1ObjectMeta.attribute_map.items()
 }
+
+
+class AdditionalPrinterColumnsType(Enum):
+    Integer = "integer"
+    Number = "number"
+    String = "string"
+    Boolean = "boolean"
+    Date = "date"
+
+
+@dataclass
+class KubeResourceAdditionalPrinterColumns:
+    name: str = ""
+    type: AdditionalPrinterColumnsType = AdditionalPrinterColumnsType.String
+    jsonPath: str = ""
 
 
 class KubeResourceBase:
@@ -31,6 +47,9 @@ class KubeResourceBase:
     __group__: str
     __version__: str
     __scope__: Scope = Scope.NAMESPACE
+    __additionalPrinterColumns__: Optional[
+        List[KubeResourceAdditionalPrinterColumns]
+    ] = []
 
     @staticmethod
     def dataclass_to_properties(dc_type: Any) -> dict:
@@ -122,6 +141,16 @@ class KubeResourceBase:
 
         This returns a dict representation of the Kubernetes CRD Object of cls.
         """
+        additionalPrinterColumns = []
+        for column in cls.__additionalPrinterColumns__:
+            additionalPrinterColumns.append(
+                {
+                    "name": column.name,
+                    "type": column.type.value,
+                    "jsonPath": column.jsonPath,
+                }
+            )
+
         crd = {
             "apiVersion": "apiextensions.k8s.io/v1",
             "kind": "CustomResourceDefinition",
@@ -154,6 +183,7 @@ class KubeResourceBase:
                                 },
                             }
                         },
+                        "additionalPrinterColumns": additionalPrinterColumns,
                     }
                 ],
             },
