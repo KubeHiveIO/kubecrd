@@ -30,6 +30,8 @@ This project actively supports **non-EOL (actively maintained)** versions of bot
 
 ### Code Examples
 - [01. CRD Schema Minimal](./examples/01-minimal/README.md)
+- [02. Simple Operator](./examples/02-simple-operator/README.md)
+- [03. Forum Webapp](./examples/03-forum-webapp/README.md)
 - [04. CRD Schema Nested](./examples/04-nested-crd/README.md)
 - [05. Additional Printer Columns](./examples/05-additional-printer-columns/README.md)
 
