@@ -7,8 +7,7 @@ This example includes a simple operator that is built using `Kopf
 very easy.
 
 
-Running example
----------------
+## Running example
 
 In order to run this example, you can use ``poetry`` in this project::
 
