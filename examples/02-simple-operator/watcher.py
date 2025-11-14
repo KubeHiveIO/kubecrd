@@ -2,9 +2,10 @@ import asyncio
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from apischema import schema
+
 import kopf
 import kubernetes
-from apischema import schema
 
 from kubecrds import schemabase
 
