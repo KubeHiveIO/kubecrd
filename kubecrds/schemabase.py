@@ -61,7 +61,7 @@ class KubeResourceBase:
             # Infer type
             if f.type is str:
                 prop_schema["type"] = "string"
-            elif issubclass(f.type, Enum):
+            elif isinstance(f.type, type) and issubclass(f.type, Enum):
                 prop_schema["type"] = "string"
                 prop_schema["enum"] = [value.value for value in f.type]
             elif f.type is int:
