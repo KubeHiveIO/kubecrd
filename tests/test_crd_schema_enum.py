@@ -13,7 +13,7 @@ class Color(Enum):
 
 @dataclass
 class CrdSchemaEnumResource(schemabase.KubeResourceBase):
-    __group__ = "example.com"
+    __group__ = "simple-example.com"
     __version__ = "v1alpha1"
     __scope__ = Scope.CLUSTER
 
@@ -42,15 +42,15 @@ def test_crd_schema_enum_generates_valid_yaml():
 
     assert (
         len(
-            crd["spec"]["versions"][0]["schema"]["properties"]["spac"]["properties"][
-                "mode"
-            ]["enum"]
+            crd["spec"]["versions"][0]["schema"]["openAPIV3Schema"]["properties"][
+                "spec"
+            ]["properties"]["mode"]["enum"]
         )
         == 3
     )
     assert (
-        crd["spec"]["versions"][0]["schema"]["properties"]["spac"]["properties"][
-            "mode"
-        ]["default"]
+        crd["spec"]["versions"][0]["schema"]["openAPIV3Schema"]["properties"]["spec"][
+            "properties"
+        ]["mode"]["default"]
         == "Red"
     )

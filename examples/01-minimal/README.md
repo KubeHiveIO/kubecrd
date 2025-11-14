@@ -62,7 +62,7 @@ kind: CustomResourceDefinition
 metadata:
   name: exampleresources.example.com
 spec:
-  group: example.com
+  group: simple-example.com
   names:
     kind: ExampleResource
     plural: exampleresources
