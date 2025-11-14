@@ -1,4 +1,4 @@
-# CRD Schema
+# CRD Schema Minimal <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=e8da2de2-769b-48e2-a194-a1efb25883f6&page=example-01&title=CRD Schema Minimal" />
 
 This is a simple example that simply prints the CRD schema for a given Python
 dataclass. You can run it using::

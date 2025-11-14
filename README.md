@@ -6,7 +6,11 @@ Custom Resources. To achieve that it provides a base class,
 dataclassses into Kubernetes Custom Resources and also generate and install
 Custom Resource Definitions for those resource into the K8s cluster directly.
 
-**Install kubecrds package**
+
+## Installing kubecrds package**
+
+Kube CRD can be install from PyPI using pip or your favorite tool
+
 ```sh
 pip install kubecrds --extra-index-url https://pip.kubehive.io/simple/
 ```
@@ -25,6 +29,10 @@ This project actively supports **non-EOL (actively maintained)** versions of bot
 > 🧩 Our CI pipeline automatically runs tests against multiple Python and Kubernetes versions to prevent regressions and maintain backward compatibility across all active releases.
 
 ### Code Examples
+- [01. CRD Schema Minimal](./examples/01-minimal/README.md)
+- [02. Simple Operator](./examples/02-simple-operator/README.md)
+- [03. Forum Webapp](./examples/03-forum-webapp/README.md)
+- [04. CRD Schema Nested](./examples/04-nested-crd/README.md)
 - [05. Additional Printer Columns](./examples/05-additional-printer-columns/README.md)
 
 ---
@@ -254,13 +262,4 @@ Or you can use the block sync API for the watch::
 ``` python
 for happened, resource in Resource.watch(k8s_client):
   print(f'Resource {resource.metadata.name} was {happened}')
-```
-
-Installing
-==========
-
-Kube CRD can be install from PyPI using pip or your favorite tool::
-
-``` sh
-pip install kubecrds
 ```
