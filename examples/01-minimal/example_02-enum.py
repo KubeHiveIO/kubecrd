@@ -26,9 +26,6 @@ class ExampleResource(schemabase.KubeResourceBase):
     )
 
 
-print([value.value for value in Color])
-
-
 def main():
     print(ExampleResource.crd_schema())
 
