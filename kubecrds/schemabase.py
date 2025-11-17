@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from enum import Enum
 import json
 from typing import Any, List, Optional
@@ -61,6 +62,12 @@ class KubeResourceBase:
             # Infer type
             if f.type is str:
                 prop_schema["type"] = "string"
+            elif f.type is date:
+                prop_schema["type"] = "string"
+                prop_schema["format"] = "date"
+            elif f.type is datetime:
+                prop_schema["type"] = "string"
+                prop_schema["format"] = "date-time"
             elif isinstance(f.type, type) and issubclass(f.type, Enum):
                 prop_schema["type"] = "string"
                 prop_schema["enum"] = [value.value for value in f.type]
