@@ -15,6 +15,11 @@ Kube CRD can be install from PyPI using pip or your favorite tool
 pip install kubecrds --extra-index-url https://pip.kubehive.io/simple/
 ```
 
+If using Poetry
+```
+poetry source add --priority explicit kubehive https://pip.kubehive.io/simple/
+poetry add kubecrds --source kubehive
+```
 ---
 ### ✅ Supported Versions
 
